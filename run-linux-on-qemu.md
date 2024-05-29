@@ -14,7 +14,7 @@ apt install -y git
 获取linux-kernel源码：
 
 ```bash
-git clone https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+git clone https://github.com/torvalds/linux
 ```
 
 检查commit记录和分支：
