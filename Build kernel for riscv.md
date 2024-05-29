@@ -30,7 +30,7 @@ git log
 
 ```bash
 apt update && apt upgrade -y
-apt install -y gcc clang rustc bindgen make flex bash  bison pahole mount jfsutils reiserfsprogs xfsprogs  btrfs-progs pcmciautils quota ppp nfs-common grub2-common udev python3-sphinx global build-essential libncurses-dev bison flex libssl-dev libelf-dev bc
+apt install -y gcc clang rustc bindgen make flex bash  bison pahole mount jfsutils reiserfsprogs xfsprogs  btrfs-progs pcmciautils quota ppp nfs-common grub2-common udev python3-sphinx global build-essential libncurses-dev bison flex libssl-dev libelf-dev bc gcc-riscv64-linux-gnu
 ```
 
 ### 配置与编译
@@ -44,12 +44,12 @@ apt install -y gcc clang rustc bindgen make flex bash  bison pahole mount jfsuti
 其他配置选项参考文档：https://docs.kernel.org/admin-guide/README.html
 
 ```bash
-make defconfig
+make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- defconfig
 ```
 
 编译直接使用make选项即可，`-j`选项后面的数字是使用核心数
 
 ```bash
-make -j16
+make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- -j16
 ```
 
