@@ -233,4 +233,100 @@ stg push
 stg commit --all
 ```
 
-## 
+## 同文件的1个commit拆分成2个commit
+
+现在假设我们在一个文件内做了多次修改，但是让该文件的这个commit拆分成多个commit，这可就跟上面的有些不同了，使用以下命令对b.txt文件作修改并且提交：
+
+```bash\
+echo "Hello" > b.txt  && echo "World" >> b.txt
+git add b.txt
+git commit -m "put hello and world to b.txt"
+```
+
+从`commit`中生成`stg`管理的`patch`：
+
+```bash
+stg uncommit -n 1
+stg series
+
+# > put-hello-and-world-to-b-txt
+```
+
+现在将这个patch删除并且该patch的更改保留在工作区:
+
+```bash
+# --spill参数 删除补丁，但不修改索引和工作树
+stg delete put-hello-and-world-to-b-txt --spill
+```
+
+使用reset命令取消对b.txt的track，否则怎么添加到工作区都会显示everything up-to-date:
+
+```bash
+git reset
+```
+
+新建一个patch作为第一个拆分提交:
+
+```bash
+stg new -m "put hello to b.txt" sub0
+```
+
+使用add命令的-p选项选取性的将hunk加入到缓冲区：
+
+```bash
+git add -p b.txt
+
+# diff --git a/b.txt b/b.txt
+# index e69de29..f9264f7 100644
+# --- a/b.txt
+# +++ b/b.txt
+# @@ -0,0 +1,2 @@
+# +Hello
+# +World
+# (1/1) Stage this hunk [y,n,q,a,d,e,?]?
+# 此时可以看到这两行文本被作为了一个hunk，我们可以输入?选项区查看ynqade这几个选项的意思，这里直接输入e编辑，删除掉+World，此次add只需要Hello这个文本
+```
+
+将此次改动应用到patch中:
+
+```bash
+# --index选项不将当前工作区所有内容，而是设置为索引的当前内容
+# 更多内容详见 https://stacked-git.github.io/man/stg-refresh/
+stg refresh --index
+```
+
+新建一个patch作为第二个拆分提交:
+
+```bash
+stg new -m "put world to b.txt" sub1
+```
+
+使用add命令的-p选项选取性的将hunk加入到缓冲区：
+
+```bash
+git add -p b.txt
+
+# diff --git a/b.txt b/b.txt
+# index e965047..f9264f7 100644
+# --- a/b.txt
+# +++ b/b.txt
+# @@ -1 +1,2 @@
+#  Hello
+# +World
+# (1/1) Stage this hunk [y,n,q,a,d,e,?]?
+# 此次改动只增加了world，所以直接y就好
+```
+
+将此次改动应用到patch中:
+
+```bash
+# --index选项不将当前工作区所有内容，而是设置为索引的当前内容
+# 更多内容详见 https://stacked-git.github.io/man/stg-refresh/
+stg refresh --index
+```
+
+具体验证方法还是`diff`，这里不再多赘述，在修改完成后，使用`commit`命令将这些`patch`提交到存储库的历史记录中:
+
+```bash
+stg commit --all
+```
