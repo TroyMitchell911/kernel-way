@@ -118,7 +118,7 @@ stg commit --all
 
 ## 将2个commit合并为1个commit
 
-在做这一步之前，我们首先创建一个commit
+在做这一步之前，我们首先创建一个`commit`
 
 ```bash
 touch b.txt
@@ -141,16 +141,17 @@ stg series
 # > add-b-txt
 ```
 
-使用squash命令将这两个commit合并为一个，squash命令具体参数详见https://stacked-git.github.io/man/stg-squash/：
+使用`squash`命令将这两个`commit`合并为一个：
 
 ```bash
+# squash命令具体参数详见https://stacked-git.github.io/man/stg-squash/
 stg squash -m "add a.txt and b.txt" add-a-text-file add-b-txt
 stg series
 
 # > add-a-txt-and-b-txt
 ```
 
-通过series命令的查询，确实两个message变成了一个message，但是两个文件的创建是否都被合并进去了还有待验证，使用git log查看哈希值后，可以通过diff命令查看差异：
+通过`series`命令的查询，确实两个`message`变成了一个`message`，但是两个文件的创建是否都被合并进去了还有待验证，使用`git log`查看哈希值后，可以通过`diff`命令查看差异：
 
 ```bash
 git log
@@ -171,9 +172,63 @@ ed3cd6b13c44
 # b.txt
 ```
 
-通过diff命令确实可以查看到一个commit中改动了这两个文件，在修改完成后，使用`commit`命令将这些`patch`提交到存储库的历史记录中:
+通过`diff`命令确实可以查看到一个`commit`中改动了这两个文件，在修改完成后，使用`commit`命令将这些`patch`提交到存储库的历史记录中:
 
 ```bash
 stg commit --all
 ```
 
+## 将1个commit拆分成2个commit
+
+从`commit`中生成`stg`管理的`patch`：
+
+```bash
+stg uncommit -n 1
+stg series
+
+# > add-a-txt-and-b-txt
+```
+
+现在使用`new`命令创建一个新的`patch`，这个`patch`应该增加了`b.txt`，而`add-a-txt-and-b-txt`这个`patch`应该增加`a.txt`
+
+```bash
+stg new -m "add b.txt" add-b-txt
+
+# -m选择commit的message内容，add-b-txt为stg管理的patch名
+# 具体更多内容详见 https://stacked-git.github.io/man/stg-new/
+```
+
+现在删除文件`b.txt`，并且使这个操作刷新到名字为`add-a-txt-and-b-txt这个patch`，这样这个`patch`与上一个`commit`就只差一个`a.txt`了
+
+```bash
+rm b.txt
+# --patch参数指定patch名 不添加这个参数就是默认刷新到最顶层patch
+# 具体更多内容详见 https://stacked-git.github.io/man/stg-refresh/
+stg refresh --patch add-a-txt-and-b-txt
+```
+
+现在增加文件`b.txt`并且刷新到`add-b-txt`
+
+```bash
+touch b.txt
+# 由于add-b-txt位于顶层，所以不需要--patch指定
+stg refresh
+```
+
+做到这一步的时候，我们只是修改了`add-a-txt-and-b-txt`这个patch所修改的文件，但`commit-message`还是`“add a.txt and b.txt”`，所以我们要使用`edit`命令修改`message`，但很遗憾的是，`edit`命令可不像`refresh`可以指定`patch`，只能修改顶层`patch`（至少我没有在文档里看到，如果有方法，欢迎补充），所以我们要通过`pop`指令弹出`add-b-txt`这个`patch`后再`edit`:
+
+```bash
+stg pop
+# -m 在命令行中提交message
+# 具体更多内容详见 https://stacked-git.github.io/man/stg-edit/
+stg edit -m "add a.txt"
+stg push
+```
+
+具体验证方法还是`diff`，这里不再多赘述，在修改完成后，使用`commit`命令将这些`patch`提交到存储库的历史记录中:
+
+```bash
+stg commit --all
+```
+
+## 
