@@ -115,3 +115,65 @@ stg push
 ```bash
 stg commit --all
 ```
+
+## 将2个commit合并为1个commit
+
+在做这一步之前，我们首先创建一个commit
+
+```bash
+touch b.txt
+git add -A
+git commit -m "add b.txt"
+```
+
+从`commit`中生成`stg`管理的`patch`：
+
+```bash
+stg uncommit -n 2
+```
+
+使用以下命令可查询目前`stg`管理的`patch`，其中`>`符号指向当前顶层的`patch`，`+`符号提示已经应用的`patch`:
+
+```bash
+stg series
+
+# + add-a-text-file
+# > add-b-txt
+```
+
+使用squash命令将这两个commit合并为一个，squash命令具体参数详见https://stacked-git.github.io/man/stg-squash/：
+
+```bash
+stg squash -m "add a.txt and b.txt" add-a-text-file add-b-txt
+stg series
+
+# > add-a-txt-and-b-txt
+```
+
+通过series命令的查询，确实两个message变成了一个message，但是两个文件的创建是否都被合并进去了还有待验证，使用git log查看哈希值后，可以通过diff命令查看差异：
+
+```bash
+git log
+
+# commit d5f165d0b98d3bae56494ff4c1c42d3bde8c8d00 (HEAD -> main, refs/patches/main/add-a-txt-and-b-txt)
+# Author: TroyMitchell911 <andrew998@126.com>
+# Date:   Fri May 31 16:56:46 2024 +0800
+# 
+#     add a.txt and b.txt
+
+# commit b83c2bb563ef9ff1735809ae0b3eed3cd6b13c44
+# ...
+
+git diff --name-only d5f165d0b98d3bae56494ff4c1c42d3bde8c8d00 b83c2bb563ef9ff1735809ae0b3e
+ed3cd6b13c44
+
+# a.txt
+# b.txt
+```
+
+通过diff命令确实可以查看到一个commit中改动了这两个文件，在修改完成后，使用`commit`命令将这些`patch`提交到存储库的历史记录中:
+
+```bash
+stg commit --all
+```
+
