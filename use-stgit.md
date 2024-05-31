@@ -211,6 +211,8 @@ stg refresh --patch add-a-txt-and-b-txt
 
 ```bash
 touch b.txt
+# 追踪b.txt 这一点至关重要
+stg add a.txt
 # 由于add-b-txt位于顶层，所以不需要--patch指定
 stg refresh
 ```
