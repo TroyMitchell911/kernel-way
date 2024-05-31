@@ -235,7 +235,7 @@ stg commit --all
 
 ## 同文件的1个commit拆分成2个commit
 
-现在假设我们在一个文件内做了多次修改，但是让该文件的这个commit拆分成多个commit，这可就跟上面的有些不同了，使用以下命令对b.txt文件作修改并且提交：
+现在假设我们在一个文件内做了多次修改，但是让该文件的这个`commit`拆分成多个`commit`，这可就跟上面的有些不同了，使用以下命令对`b.txt`文件作修改并且提交：
 
 ```bash\
 echo "Hello" > b.txt  && echo "World" >> b.txt
@@ -252,26 +252,26 @@ stg series
 # > put-hello-and-world-to-b-txt
 ```
 
-现在将这个patch删除并且该patch的更改保留在工作区:
+现在将这个`patch`删除并且该`patch`的更改保留在工作区:
 
 ```bash
 # --spill参数 删除补丁，但不修改索引和工作树
 stg delete put-hello-and-world-to-b-txt --spill
 ```
 
-使用reset命令取消对b.txt的track，否则怎么添加到工作区都会显示everything up-to-date:
+使用`reset`命令取消对`b.txt`的`track`，否则怎么添加到工作区都会显示`everything up-to-date`:
 
 ```bash
 git reset
 ```
 
-新建一个patch作为第一个拆分提交:
+新建一个`patch`作为第一个拆分提交:
 
 ```bash
 stg new -m "put hello to b.txt" sub0
 ```
 
-使用add命令的-p选项选取性的将hunk加入到缓冲区：
+使用`add`命令的`-p`选项选取性的将`hunk`加入到缓冲区：
 
 ```bash
 git add -p b.txt
@@ -287,7 +287,7 @@ git add -p b.txt
 # 此时可以看到这两行文本被作为了一个hunk，我们可以输入?选项区查看ynqade这几个选项的意思，这里直接输入e编辑，删除掉+World，此次add只需要Hello这个文本
 ```
 
-将此次改动应用到patch中:
+将此次改动应用到`patch`中:
 
 ```bash
 # --index选项不将当前工作区所有内容，而是设置为索引的当前内容
@@ -295,13 +295,13 @@ git add -p b.txt
 stg refresh --index
 ```
 
-新建一个patch作为第二个拆分提交:
+新建一个`patch`作为第二个拆分提交:
 
 ```bash
 stg new -m "put world to b.txt" sub1
 ```
 
-使用add命令的-p选项选取性的将hunk加入到缓冲区：
+使用`add`命令的`-p`选项选取性的将`hunk`加入到缓冲区：
 
 ```bash
 git add -p b.txt
@@ -317,7 +317,7 @@ git add -p b.txt
 # 此次改动只增加了world，所以直接y就好
 ```
 
-将此次改动应用到patch中:
+将此次改动应用到`patch`中:
 
 ```bash
 # --index选项不将当前工作区所有内容，而是设置为索引的当前内容
