@@ -330,3 +330,11 @@ stg refresh --index
 ```bash
 stg commit --all
 ```
+
+## Ref
+
+https://stacked-git.github.io/guides/tutorial/
+
+https://stacked-git.github.io/guides/usage-example/
+
+https://stacked-git.github.io/man/
