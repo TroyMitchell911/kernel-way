@@ -89,6 +89,60 @@ make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- k1_defconfig && make AR
 编译后在uboot目录下产生了如下文件
 
 ```bash
-FSBL.bin bootinfo_emmc.bin  bootinfo_sd.bin  bootinfo_spinand.bin bootinfo_spinor.bin boot.itb
+FSBL.bin bootinfo_emmc.bin  bootinfo_sd.bin  bootinfo_spinand.bin bootinfo_spinor.bin u-boot.itb
 ```
 
+## 加载uboot
+
+将以下文件放入U盘并插入到bpi-f3:
+
+- FSBL.bin
+- bootinfo_emmc.bin
+- u-boot.itb
+
+在bpi-f3上执行以下命令:
+
+```bash
+mount /dev/sda1 /mnt && cd /mnt
+
+echo 0 > /sys/block/mmcblk2boot0/force_ro
+dd if=bootinfo_emmc.bin of=/dev/mmcblk2boot0
+
+dd if=FSBL.bin of=/dev/mmcblk2boot0 bs=512 seek=1
+```
+
+清空mmcblk2分区数据:
+
+```bash
+dd if=/dev/zero of=/dev/mmcblk2 bs=1M count=8
+```
+
+创建gpt分区表和uboot分区:
+
+```bash
+parted /dev/mmcblk2
+
+(parted) mktable gpt
+# 这里0%则是从0%处开始，因为GPT分区表大概占1M，所以结束位置用3M
+# 即创建2M的分区 名字叫uboot
+(parted) mkpart uboot 0% 3M
+(parted) print                                                            
+Model: MMC AJTD4R (sd/mmc)
+Disk /dev/mmcblk2: 15.6GB
+Sector size (logical/physical): 512B/512B
+Partition Table: gpt
+Disk Flags: 
+
+Number  Start   End     Size    File system  Name   Flags
+ 1      1049kB  3146kB  2097kB               uboot
+ 
+(parted) quit
+```
+
+使用以下命令写入uboot:
+
+```bash
+dd if=./u-boot.itb of=/dev/mmcblk2p1
+```
+
+现在拿掉sd卡，复位后可看到SPL和Uboot的输出，重点观察编译时间。
