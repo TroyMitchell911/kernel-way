@@ -58,6 +58,12 @@ make CROSS_COMPILE=riscv64-unknown-linux-gnu- PLATFORM=generic -j16
 
 ![opensbi-successful](./images/opensbi-successful.png)
 
+将该文件导出为OPENSBI，uboot编译要用到:
+
+```bash
+export OPENSBI=<your-open-sbi-path>/build/platform/generic/firmware/fw_dynamic.bin
+```
+
 ## 编译uboot
 
 获取uboot源码:
@@ -83,5 +89,6 @@ make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- k1_defconfig && make AR
 编译后在uboot目录下产生了如下文件
 
 ```bash
-bootinfo_emmc.bin  bootinfo_sd.bin  bootinfo_spinand.bin bootinfo_spinor.bin
+FSBL.bin bootinfo_emmc.bin  bootinfo_sd.bin  bootinfo_spinand.bin bootinfo_spinor.bin boot.itb
 ```
+
