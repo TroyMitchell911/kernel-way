@@ -124,3 +124,17 @@ dd if=./u-boot.itb of=/dev/mmcblk2p1
 ```
 
 现在拿掉sd卡，复位后可看到SPL和Uboot的输出，重点观察编译时间。
+
+## 加载uboot环境变量
+
+将env_k1-x.txt放入bootfs中，uboot会自动检测并且读取此文件作为环境变量
+
+```bash
+mount /dev/mmcblk2p2 /mnt
+
+cp env_k1-x.txt /mnt
+
+umount /mnt
+sync
+```
+
