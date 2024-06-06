@@ -111,32 +111,10 @@ dd if=bootinfo_emmc.bin of=/dev/mmcblk2boot0
 dd if=FSBL.bin of=/dev/mmcblk2boot0 bs=512 seek=1
 ```
 
-清空mmcblk2分区数据:
+使用[mmcblk2_dump.bin](./resources/mmcblk2_dump.bin)覆盖mmcblk2分区数据:
 
 ```bash
-dd if=/dev/zero of=/dev/mmcblk2 bs=1M count=8
-```
-
-创建gpt分区表和uboot分区:
-
-```bash
-parted /dev/mmcblk2
-
-(parted) mktable gpt
-# 这里0%则是从0%处开始，因为GPT分区表大概占1M，所以结束位置用3M
-# 即创建2M的分区 名字叫uboot
-(parted) mkpart uboot 0% 3M
-(parted) print                                                            
-Model: MMC AJTD4R (sd/mmc)
-Disk /dev/mmcblk2: 15.6GB
-Sector size (logical/physical): 512B/512B
-Partition Table: gpt
-Disk Flags: 
-
-Number  Start   End     Size    File system  Name   Flags
- 1      1049kB  3146kB  2097kB               uboot
- 
-(parted) quit
+dd if=/dev/mmcblk2_dump.bin of=/dev/mmcblk2 status=progess
 ```
 
 使用以下命令写入uboot:
