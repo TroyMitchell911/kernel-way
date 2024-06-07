@@ -1,8 +1,8 @@
 ## 加载initramfs
 
-首先获取[initramfs](./resources/initramfs-generic.img)，该文件取自bianbu系统的bootfs.ext4。
+首先获取[initramfs](./resources/initramfs-generic.img)，该文件取自`bianbu`系统的`bootfs.ext4`。
 
-将其加载到bootfs:
+将其加载到`bootfs`:
 
 ```bash
 mount /dev/mmcblk2p2 /mnt
@@ -15,9 +15,9 @@ sync
 
 ## 加载rootfs
 
-获取armbian镜像：https://docs.banana-pi.org/en/BPI-F3/BananaPi_BPI-F3
+获取`armbian`镜像：https://docs.banana-pi.org/en/BPI-F3/BananaPi_BPI-F3
 
-提取rootfs:
+提取`rootfs`:
 
 ```bash
 xz -d 2024-05-24-Armbian-bpi-SpacemiT_24.5.0-trunk_Bananapif3_mantic_legacy_6.1.15_gnome_desktop.img.xz
@@ -33,13 +33,13 @@ loop14       7:14   0  6.2G  0 loop
 dd if=/dev/loop14p2 of=./armbian_rootfs.ext4 status=progress
 ```
 
-将rootfs加载到rootfs分区:
+将`rootfs`加载到`rootfs`分区:
 
 ```bash
 dd if=armbian_rootfs.ext4 of=/dev/mmcblk2p3 status=progress
 ```
 
-由于不太清楚这个rootfs的密码，所以更改root密码:
+由于不太清楚这个`rootfs`的密码，所以更改`root密码`:
 
 ```bash
 mount /dev/mmcblk2p3 /mnt
@@ -49,7 +49,7 @@ vim /mnt/etc/shadow
 # root::19867:0:99999:7:::
 ```
 
-更改bootfs的uuid，否则无法挂载boot目录就会无法进入rootfs:
+更改`bootfs`的`uuid`，否则无法挂载`boot目录`就会无法进入`rootfs`:
 
 ```bash
 blkid /dev/mmcblk2p*

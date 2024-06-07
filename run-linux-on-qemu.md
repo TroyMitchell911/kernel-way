@@ -8,22 +8,22 @@ su && mkdir -p /workspace && mkdir -p linux-riscv && cd /workspace
 
 ### 获取源码
 
-为了获取具有完整commit记录和branch分支的linux源码，我们需要使用git工具。
+为了获取具有完整`commit`记录和`branch`分支的`linux`源码，我们需要使用`git`工具。
 
-安装git工具：
+安装`git`工具：
 
 ```bash
 apt update && apt upgrade -y
 apt install -y git
 ```
 
-获取linux-kernel源码：
+获取`linux-kernel`源码：
 
 ```bash
 git clone https://github.com/torvalds/linux && cd linux
 ```
 
-检查commit记录和分支：
+检查`commit`记录和分支：
 
 ```bash
 git branch -a
@@ -53,7 +53,7 @@ apt install -y gcc clang rustc bindgen make flex bash  bison pahole mount jfsuti
 make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- defconfig
 ```
 
-编译直接使用make选项即可，`-j`选项后面的数字是使用核心数
+编译直接使用`make`选项即可，`-j`选项后面的数字是使用核心数
 
 ```bash
 make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- -j16
@@ -156,7 +156,7 @@ chmod +x init
 cd .. && vim Makefile
 ```
 
-将以下内容写入Makefile：
+将以下内容写入`Makefile`：
 
 ```makefile
 .PHONY: initramfs
@@ -186,7 +186,7 @@ run:
 
 ## 安装qemu
 
-使用`apt`包管理器安装qemu：
+使用`apt`包管理器安装`qemu`：
 
 ```bash
 apt install qemu-system-misc

@@ -25,7 +25,7 @@ df -h
 # tmpfs           766M  766M     0  100% /run/user/1000
 ```
 
-在不丢失数据的情况下给/run/user/1000扩容：
+在不丢失数据的情况下给`/run/user/1000`扩容：
 
 ```bash
 sudo mount -o remount,size=4G /run/user/1000
