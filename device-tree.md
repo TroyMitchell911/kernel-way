@@ -1,3 +1,5 @@
+## 设备树如何编译 & 如何添加自己的设备树
+
 我们可以通过这样的命令去编译设备树文件：
 
 ```bash
@@ -82,7 +84,21 @@ scripts_dtc: scripts_basic
 [@]make[options] -f ./scripts/Makefile.build obj=scripts/dtc
 ```
 
-回到`dtbs`中，源码如下:
+这个`script_dtc`目标会执行`scripts/dtc`下的`Makefile`将主机的`dtc`工具编译出来，以便编译`dts`设备树文件：
+
+```makefile
+# *** Also keep .gitignore in sync when changing ***
+hostprogs-always-$(CONFIG_DTC)          += dtc fdtoverlay
+hostprogs-always-$(CHECK_DT_BINDING)    += dtc
+```
+
+`dtc`工具是一个可以将`dts`编译成`dtb`也可以将`dtb`编译成`dts`的工具，如将`dtb`编译成`dts`使用如下：
+
+```bash
+./scripts/dtc/dtc -I dtb -O dts <dtb-path>/<dtb-name>.dtb -o <dts-path>/<dts-name>.dts
+```
+
+回到`dtbs`这个目标中，源码如下:
 
 ```makefile
 dtbs: dtbs_prepare
@@ -109,7 +125,7 @@ SRCARCH         := $(ARCH)
 [@]make[options] -f ./scripts/Makefile.build obj=arch/riscv/boot/dts
 ```
 
-最终执行到`arch/riscv/boot/dts/Makefile`
+最终执行到`arch/riscv/boot/dts/Makefile`。
 
 让我们查看下这个`Makefile`：
 
@@ -127,9 +143,9 @@ subdir-y += thead
 obj-$(CONFIG_BUILTIN_DTB) := $(addsuffix /, $(subdir-y))
 ```
 
-看来如果我们需要添加某个芯片的设备树支持，就在这个Makefile中添加子文件夹名称。
+看来如果我们需要添加某个芯片的设备树支持，就在这个`Makefile`中添加子文件夹名称。
 
-以sifive为例，查看`arch/riscv/boot/dts/sifive/Makefile`：
+以`sifive`为例，查看`arch/riscv/boot/dts/sifive/Makefile`,该文件描述了当某种`SoC`被选中后，哪些`.dtb`文件会被编译出来：
 
 ```makefile
 # SPDX-License-Identifier: GPL-2.0
