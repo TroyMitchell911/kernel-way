@@ -1,8 +1,10 @@
 ## 增加itb的支持
 
-使用diff命令对比arch/riscv/Kconfig和../pi-linux/arch/riscv/Kconfig的差异，进行修改。
+使用`diff`命令对比`arch/riscv/Kconfig`和`../pi-linux/arch/riscv/Kconfig`的差异，进行修改。
 
-这里不再赘述，具体查看https://github.com/TroyMitchell911/bpi-f3-linux-6.6/blob/main/arch/riscv/Makefile和https://github.com/TroyMitchell911/bpi-f3-linux-6.6/blob/main/arch/riscv/boot/Makefile。
+这里不再赘述，具体查看：
+https://github.com/TroyMitchell911/bpi-f3-linux-6.6/blob/main/arch/riscv/Makefile
+https://github.com/TroyMitchell911/bpi-f3-linux-6.6/blob/main/arch/riscv/boot/Makefile。
 
 ```bash
 $ cp ../pi-linux/arch/riscv/Makefile arch/riscv/Makefile
@@ -29,7 +31,7 @@ $ make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- -j16
 # make[2]: *** 没有规则可制作目标“arch/riscv/generic/Image.its.S”，由“arch/riscv/boot/Image.its.S” 需求。 停止
 ```
 
-查看Makefile中如何生成itb文件的：
+查看`Makefile`中如何生成`itb`文件的：
 
 ```makefile
   1 include $(srctree)/arch/riscv/generic/Platform
@@ -45,7 +47,7 @@ $ make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- -j16
   9         $(Q)$(MAKE) $(build)=$(boot) $(bootvars-y) $(boot)/$@
 ```
 
-查看Platform文件：
+查看`Platform`文件：
 
 ``````
 1   #
@@ -65,7 +67,7 @@ $ make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- -j16
  14 its-y   := Image.its.S
 ``````
 
-发现这里添加了一个Image.its.S文件，那么应该就是在6.1.16这个目录下，拷贝过来：
+发现这里添加了一个`Image.its.S`文件，那么应该就是在`6.1.15`这个目录下，拷贝过来：
 
 ```bash
 $ cp ../pi-linux/arch/riscv/generic/Image.its.S arch/riscv/generic/
@@ -76,16 +78,16 @@ $ ls arch/riscv/boot/*.itb
 
 ## 加载内核测试
 
-该小节基于tftp服务，details查看[05-uboot-net.md](../00-started/05-uboot-net.md)
+该小节基于`tftp`服务，`details`查看[05-uboot-net.md](../00-started/05-uboot-net.md)
 
-将内核文件和dtb文件传入tftp目录：
+将`内核文件`和`dtb文件`传入`tftp`目录：
 
 ```bash
 $ cp arch/riscv/boot/Image.itb  ../tftp
 $ cp arch/riscv/boot/dts/spacemit/k1-x_deb1.dtb  ../tftp
 ```
 
-启动uboot后打断，设置环境变量：
+启动`uboot`后打断，设置环境变量：
 
 ```bash
 => setenv loadknl 'echo "Loading kernel..."; tftpboot ${kernel_addr_r} Image.itb'
@@ -121,16 +123,16 @@ EPC: 0000000077ed7c7a RA: 0000000077edae84 TVAL: 0000000000000000
 EPC: 0000000000201c7a RA: 0000000000204e84 reloc adjusted
 ```
 
-发现出现了错误，此时观察Load Address和Entry Point都是0，一定是哪里出现了问题。
+发现出现了错误，此时观察`Load Address`和`Entry Point`都是`0`，一定是哪里出现了问题。
 
-通过对比，发现6.1.15的Load Address和Entry Point都是0x14000000，在6.1.15的目录中查找这个参数：
+通过对比，发现`6.1.15`的`Load Address`和`Entry Point`都是`0x14000000`，在`6.1.15`的目录中查找这个参数：
 
 ```bash
 $ grep -nR 0x14000000 ../pi-linux
 # ../pi-linux/arch/riscv/configs/k1_defconfig:48:CONFIG_IMAGE_LOAD_OFFSET=0x1400000
 ```
 
-对比6.6目录下的.config，发现没有这个选项，肯定是Kconfig没有对应选项：
+对比`6.6`目录下的`.config`，发现没有这个选项，肯定是`Kconfig`没有对应选项：
 
 ```bash
 $ grep -nR CONFIG_IMAGE_LOAD_OFFSET .config 
@@ -138,7 +140,7 @@ $ grep -nR CONFIG_IMAGE_LOAD_OFFSET .config
 
 ## 修改Kconfig
 
-使用diff命令对比arch/riscv/Kconfig和../pi-linux/arch/riscv/Kconfig的差异，进行修改。
+使用`diff`命令对比`arch/riscv/Kconfig`和`../pi-linux/arch/riscv/Kconfig`的差异，进行修改。
 
 这里不再赘述，具体查看https://github.com/TroyMitchell911/bpi-f3-linux-6.6/blob/main/arch/riscv/Kconfig。
 
@@ -152,7 +154,7 @@ $ make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- -j16
 # ...
 ```
 
-由于在Kconfig中添加了`select ARCH_CLOCKSOURCE_INIT`，所以找不到riscv中这个函数的实现:
+由于在`Kconfig`中添加了`select ARCH_CLOCKSOURCE_INIT`，所以找不到`riscv`中这个函数的实现:
 
 ```bash
 $ vim arch/riscv/kernel/time.c
@@ -174,7 +176,7 @@ void clocksource_arch_init(struct clocksource *cs)
 $ make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- -j16
 ```
 
-重新加载内核测试，出现如下info:
+重新加载内核测试，出现如下`info`:
 
 ```bash
 ## Loading kernel from FIT Image at 10000000 ...
