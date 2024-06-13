@@ -6,11 +6,6 @@
 https://github.com/TroyMitchell911/bpi-f3-linux-6.6/blob/main/arch/riscv/Makefile
 https://github.com/TroyMitchell911/bpi-f3-linux-6.6/blob/main/arch/riscv/boot/Makefile
 
-```bash
-$ cp ../pi-linux/arch/riscv/Makefile arch/riscv/Makefile
-$ cp ../pi-linux/arch/riscv/boot/Makefile arch/riscv/boot/
-```
-
 尝试编译：
 
 ```bash
