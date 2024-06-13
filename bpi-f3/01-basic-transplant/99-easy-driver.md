@@ -340,3 +340,112 @@ $ cp ../pi-linux/drivers/i2c/busses/i2c-k1x.* drivers/i2c/busses/
 ```
 
 这里应该会遇到无法编译i2c文件的问题，这是因为i2c-support没开启，用menuconfig打开一下，然后更新k1_defconfig就行了。
+
+### driver/irqchip
+
+修改drivers/irqchip/irq-sifive-plic.c(ref: ../pi-linux/drivers/irqchip/irq-sifive-plic.c)：
+
+```bash
+42c42
+< #define PRIORITY_PER_ID		        4
+---
+> #define     PRIORITY_PER_ID		4
+48,52d47
+< #ifdef CONFIG_SOC_SPACEMIT
+< #define PENDING_BASE			0x1000
+< #define CONTEXT_ENABLE_BASE		0x2080
+< #define CONTEXT_ENABLE_SIZE		0x100
+< #else
+54,55c49,50
+< #define CONTEXT_ENABLE_SIZE		0x80
+< #endif
+---
+> #define     CONTEXT_ENABLE_SIZE		0x80
+> 
+61,64d55
+< #ifdef CONFIG_SOC_SPACEMIT
+< #define CONTEXT_BASE			0x201000
+< #define CONTEXT_SIZE			0x2000
+< #else
+66,67c57,59
+< #define CONTEXT_SIZE			0x1000
+< #endif
+---
+> #define     CONTEXT_SIZE		0x1000
+> #define     CONTEXT_THRESHOLD		0x00
+> #define     CONTEXT_CLAIM		0x04
+69,73c61,62
+< #define CONTEXT_THRESHOLD		0x00
+< #define CONTEXT_CLAIM			0x04
+< 
+< #define PLIC_DISABLE_THRESHOLD		0x7
+< #define PLIC_ENABLE_THRESHOLD		0
+---
+> #define	PLIC_DISABLE_THRESHOLD		0x7
+> #define	PLIC_ENABLE_THRESHOLD		0
+118,123d106
+< 
+< #ifdef CONFIG_SOC_SPACEMIT
+< 	if (!enable)
+< 		writel(hwirq, handler->hart_base + CONTEXT_CLAIM);
+< #endif
+< 
+125,130d107
+< 
+< #ifdef CONFIG_SOC_SPACEMIT
+< 	if (enable)
+< 		writel(hwirq, handler->hart_base + CONTEXT_CLAIM);
+< #endif
+< 
+174,182c151
+< 	/* writel(d->hwirq, handler->hart_base + CONTEXT_CLAIM); */
+< 
+< 	if (unlikely(irqd_irq_disabled(d))) {
+< 		plic_toggle(handler, d->hwirq, 1);
+< 		writel(d->hwirq, handler->hart_base + CONTEXT_CLAIM);
+< 		plic_toggle(handler, d->hwirq, 0);
+< 	} else {
+< 		writel(d->hwirq, handler->hart_base + CONTEXT_CLAIM);
+< 	}
+---
+> 	writel(d->hwirq, handler->hart_base + CONTEXT_CLAIM);
+225,229c194,195
+< #ifdef CONFIG_SOC_SPACEMIT
+< 	.flags		= IRQCHIP_AFFINITY_PRE_STARTUP | IRQCHIP_ENABLE_WAKEUP_ON_SUSPEND | IRQCHIP_SKIP_SET_WAKE,
+< #else
+< 	.flags		= IRQCHIP_AFFINITY_PRE_STARTUP,
+< #endif
+---
+> 	.flags		= IRQCHIP_SKIP_SET_WAKE |
+> 			  IRQCHIP_AFFINITY_PRE_STARTUP,
+243,247c209,210
+< #ifdef CONFIG_SOC_SPACEMIT
+< 	.flags		= IRQCHIP_AFFINITY_PRE_STARTUP | IRQCHIP_ENABLE_WAKEUP_ON_SUSPEND | IRQCHIP_SKIP_SET_WAKE,
+< #else
+< 	.flags		= IRQCHIP_AFFINITY_PRE_STARTUP,
+< #endif
+---
+> 	.flags		= IRQCHIP_SKIP_SET_WAKE |
+> 			  IRQCHIP_AFFINITY_PRE_STARTUP,
+551,554d513
+< #ifdef CONFIG_SOC_SPACEMIT
+< 		handler->hart_base = priv->regs + CONTEXT_BASE +
+< 			hartid * CONTEXT_SIZE;
+< #else
+557d515
+< #endif
+559,562d516
+< #ifdef CONFIG_SOC_SPACEMIT
+< 		handler->enable_base = priv->regs + CONTEXT_ENABLE_BASE +
+< 			hartid * CONTEXT_ENABLE_SIZE;
+< #else
+565d518
+< #endif
+575,578d527
+< 			#ifdef CONFIG_SOC_SPACEMIT
+< 			/* clear pending, which maybe triggered by uboot */
+< 			writel(0, priv->regs + PENDING_BASE + (hwirq/32)*4);
+< 			#endif
+
+```
+
