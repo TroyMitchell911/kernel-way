@@ -487,3 +487,43 @@ $ vim drivers/watchdog/Makefile
 $ cp ../pi-linux/drivers/watchdog/k1x_wdt.c drivers/watchdog/
 ```
 
+### driver/pinctrl
+
+首先修改Kconfig：
+
+```bash
+$ vim drivers/pinctrl/Kconfig
+
+406,416d405
+< config PINCTRL_SPACEMIT_PMIC
+< 	tristate "Pinctrl and GPIO driver for Spacemit PMIC"
+< 	depends on MFD_SPACEMIT_PMIC
+< 	select GPIOLIB
+< 	select PINMUX
+< 	select GENERIC_PINCTRL_GROUPS
+< 	select GENERIC_PINMUX_FUNCTIONS
+< 	select GENERIC_PINCONF
+< 	help
+< 	  This selects the pinctrl driver for spacemit pmic.
+< 
+
+```
+
+修改Makefile：
+
+```bash
+$ vim drivers/pinctrl/Makefile
+53d52
+< obj-$(CONFIG_PINCTRL_SPACEMIT_PMIC)	+= spacemit-pmic-pinctrl.o
+74d72
+< obj-$(CONFIG_SOC_SPACEMIT)      += spacemit/
+```
+
+复制文件：
+
+```bash
+$ cp ../pi-linux/drivers/pinctrl/spacemit-pmic-pinctrl.c drivers/pinctrl/
+$ cp -r ../pi-linux/drivers/pinctrl/spacemit drivers/pinctrl/
+```
+
+### 
