@@ -449,3 +449,41 @@ $ cp ../pi-linux/drivers/i2c/busses/i2c-k1x.* drivers/i2c/busses/
 
 ```
 
+### driver/watchdog
+
+首先修改Kconfig：
+
+```bash
+$ vim drivers/watchdog/Kconfig
+
+2260,2273d2259
+< config SPACEMIT_WATCHDOG
+< 	tristate "Spacemit-k1x SoC Watchdog"
+< 	depends on SOC_SPACEMIT_K1X
+< 	select WATCHDOG_CORE
+< 	help
+< 	  spacemit k1x plat SoC Watchdog timer. This will reboot your system when
+< 	  the timeout is reached.
+< 
+< config K1X_WDT_TEST
+< 	bool "Support K1X watchdog test"
+< 	depends on SOC_SPACEMIT_K1X && SPACEMIT_WATCHDOG
+< 	help
+< 	  This will enable K1X watchdog timer test
+< 
+```
+
+修改Makefile：
+
+```bash
+$ vim drivers/watchdog/Makefile
+198d197
+< obj-$(CONFIG_SPACEMIT_WATCHDOG) += k1x_wdt.o
+```
+
+复制文件：
+
+```bash
+$ cp ../pi-linux/drivers/watchdog/k1x_wdt.c drivers/watchdog/
+```
+
