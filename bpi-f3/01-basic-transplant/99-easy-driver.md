@@ -519,6 +519,31 @@ $ vim drivers/pinctrl/Makefile
 < obj-$(CONFIG_SOC_SPACEMIT)      += spacemit/
 ```
 
+修改drivers/pinctrl/pinctrl-single.c:
+
+```bash
+$ vim drivers/pinctrl/pinctrl-single.c
+
+1996,2008d1995
+< #ifdef CONFIG_SOC_SPACEMIT
+< static int __init pcs_driver_init(void)
+< {
+< 	return platform_driver_register(&pcs_driver);
+< }
+< postcore_initcall(pcs_driver_init);
+< 
+< static void __exit pcs_driver_exit(void)
+< {
+< 	platform_driver_unregister(&pcs_driver);
+< }
+< module_exit(pcs_driver_exit);
+< #else
+2010d1996
+< #endif
+```
+
+
+
 复制文件：
 
 ```bash
