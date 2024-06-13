@@ -1,6 +1,6 @@
 ## 增加itb的支持
 
-使用`diff`命令对比`arch/riscv/Kconfig`和`../pi-linux/arch/riscv/Kconfig`的差异，进行修改。
+使用`diff`命令对比`arch/riscv/Kconfig`和`../pi-linux/arch/riscv/Kconfig`、`arch/riscv/Makefile`和`../pi-linux/arch/riscv/Makefile`以及`arch/riscv/boot/Makefile`和`../pi-linux/arch/riscv/boot/Makefile`的差异进行修改。
 
 这里不再赘述，具体查看：
 https://github.com/TroyMitchell911/bpi-f3-linux-6.6/blob/main/arch/riscv/Makefile
