@@ -1,5 +1,25 @@
 ## 移植soc驱动
 
+修改Kconfig增加如下内容：
+
+```bash
+$ vim drivers/soc/Kconfig
+source "drivers/soc/spacemit/Kconfig"
+```
+
+修改Makefile增加如下内容：
+
+```bash
+$ vim drivers/soc/Makefile
+obj-$(CONFIG_SOC_SPACEMIT)	+= spacemit/
+```
+
+复制：
+
+```bash
+$ cp -r ../pi-linux/driver/soc/spacemit driver/soc
+```
+
 报错信息：
 
 ```bash
