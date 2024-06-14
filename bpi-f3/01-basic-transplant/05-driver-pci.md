@@ -1,6 +1,6 @@
 ## 移植PCI驱动
 
-makefile（ref: ../pi-linux/drivers/pci/controller/dwc/Makefile）
+`Makefile`（ref: `../pi-linux/drivers/pci/controller/dwc/Makefile`）
 
 ```bash
 $ vim drivers/pci/controller/dwc/Makefile
@@ -11,7 +11,7 @@ $ vim drivers/pci/controller/dwc/Makefile
 
 ```
 
-Kconfig（ref: ../pi-linux/drivers/pci/controller/dwc/Kconfig）
+`Kconfig`（ref: `../pi-linux/drivers/pci/controller/dwc/Kconfig`）
 
 ```bash
 $ vim drivers/pci/controller/dwc/Kconfig
@@ -59,7 +59,7 @@ $ vim drivers/pci/controller/dwc/Kconfig
 $ cp ../pi-linux/drivers/gpio/gpio-k1x.c drivers/gpio/
 ```
 
-修改drivers/pci/controller/dwc/pcie-designware-host.c：
+修改`drivers/pci/controller/dwc/pcie-designware-host.c`：
 
 ```bash
 $ vim drivers/pci/controller/dwc/pcie-designware-host.c
@@ -92,9 +92,9 @@ make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- k1_defconfig
 #
 ```
 
-按道理来说我们配置好了Kconfig，初始化配置文件的时候应该被写入才对，但这里没有，就需要分析一下Kconfig了。
+按道理来说我们配置好了`Kconfig`，初始化配置文件的时候应该被写入才对，但这里没有，就需要分析一下`Kconfig`了。
 
-一般出现这种问题都是依赖项的问题，也就是depends on，让我们来列举一下depends on，EP的depends on暂时不用管：
+一般出现这种问题都是依赖项的问题，也就是`depends on`，让我们来列举一下`depends on`，`EP`的`depends on`暂时不用管：
 
 [^Note]: 在PCI架构中，endpoint通常是外围设备（如网卡、显卡、存储设备等）；host（主机）通常是计算机的中央处理器或控制器。
 
@@ -105,7 +105,7 @@ make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- k1_defconfig
 - HAS_IOMEM
 - SOC_SPACEMIT
 
-让我们来逐个去.config里面去验证：
+让我们来逐个去`.config`里面去验证：
 
 ```bash
 $ grep -e "CONFIG_SOC_SPACEMIT_K1X=" -e "CONFIG_PCI=" -e "CONFIG_OF=" -e "CONFIG_HAS_IOMEM=" -e "CONFIG_SOC_SPACEMIT=" -e "CONFIG_PCI_MSI_IRQ_DOMAIN=" .config
@@ -116,7 +116,7 @@ CONFIG_OF=y
 CONFIG_HAS_IOMEM=y
 ```
 
-发现除了PCI_MSI_IRQ_DOMAIN都是有的，也就是说名因为这个依赖项没有，所以产生了问题，去6.1.15中搜索该依赖项的配置：
+发现除了`PCI_MSI_IRQ_DOMAIN`都是有的，也就是说名因为这个依赖项没有，所以产生了问题，去`6.1.15`中搜索该依赖项的配置：
 
 ```bash
 $ grep -nR "config PCI_MSI_IRQ_DOMAIN" ../pi-linux/
@@ -124,7 +124,7 @@ $ grep -nR "config PCI_MSI_IRQ_DOMAIN" ../pi-linux/
 $ grep -nR "config PCI_MSI_IRQ_DOMAIN"
 ```
 
-发现在6.6的目录中没有找到该配置，但是6.1.15在drivers/pci/Kconfig找到了这个配置，查看该文件：
+发现在`6.6`的目录中没有找到该配置，但是`6.1.15`在`drivers/pci/Kconfig`找到了这个配置，查看该文件：
 
 ```bash
  25 config PCI_MSI
@@ -148,14 +148,14 @@ $ grep -nR "config PCI_MSI_IRQ_DOMAIN"
   7         select GENERIC_MSI_IRQ_DOMAIN
 ```
 
-发现这里选择了GENERIC_MSI_IRQ_DOMAIN，继续搜索GENERIC_MSI_IRQ_DOMAIN：
+发现这里选择了`GENERIC_MSI_IRQ_DOMAIN`，继续搜索`GENERIC_MSI_IRQ_DOMAIN`：
 
 ```bash
 $ grep -nR "config GENERIC_MSI_IRQ_DOMAIN" ../pi-linux/
 ../pi-linux/kernel/irq/Kconfig:94:config GENERIC_MSI_IRQ_DOMAIN
 ```
 
-在6.1.15kernel/irq/Kconfig均找到了该配置,但6.6没有，对比两个文件发现：
+在`6.1.15`的`kernel/irq/Kconfig`均找到了该配置,但`6.6`没有，对比两个文件发现：
 
 ```bash
 6.6:
@@ -176,7 +176,7 @@ $ grep -nR "config GENERIC_MSI_IRQ_DOMAIN" ../pi-linux/
  11         select GENERIC_MSI_IRQ
 ```
 
-看起来6.6将GENERIC_MSI_IRQ_DOMAIN合并进了GENERIC_MSI_IRQ，而PCI_MSI是会选择GENERIC_MSI_IRQ的，所以我们只需要depends on PCI_MSI即可：
+看起来`6.6`将`GENERIC_MSI_IRQ_DOMAIN`合并进了`GENERIC_MSI_IRQ`，而`PCI_MSI`是会选择`GENERIC_MSI_IRQ`的，所以我们只需要`depends on PCI_MSI`即可：
 
 ```bash
 $ vim drivers/pci/controller/dwc/Kconfig
