@@ -1,13 +1,13 @@
 ## 移植soc驱动
 
-修改Kconfig增加如下内容：
+修改`Kconfig`增加如下内容：
 
 ```bash
 $ vim drivers/soc/Kconfig
 source "drivers/soc/spacemit/Kconfig"
 ```
 
-修改Makefile增加如下内容：
+修改`Makefile`增加如下内容：
 
 ```bash
 $ vim drivers/soc/Makefile
@@ -132,7 +132,7 @@ $ find include -name "*.h" -exec grep -n "IRQF_TRIGGER_HIGH" {} +
 # include/linux/interrupt.h:35:#define IRQF_TRIGGER_MASK	(IRQF_TRIGGER_HIGH | IRQF_TRIGGER_LOW | \
 ```
 
-查看drivers/soc/spacemit/spacemit-rf/spacemit-wlan.c是否包含该头文件：
+查看`drivers/soc/spacemit/spacemit-rf/spacemit-wlan.c`是否包含该头文件：
 
 ```bash
 $ grep -n "interrupt.h" drivers/soc/spacemit/spacemit-rf/spacemit-wlan.c
@@ -149,7 +149,7 @@ $ find include -name "*.h" -exec grep -n "struct of_device_id {" {} +
 # include/linux/mod_devicetable.h:282:struct of_device_id {
 ```
 
-查看drivers/soc/spacemit/spacemit-rf/spacemit-bt.c和drivers/soc/spacemit/spacemit-rf/spacemit-wlan.c是否包含该头文件：
+查看`drivers/soc/spacemit/spacemit-rf/spacemit-bt.c`和`drivers/soc/spacemit/spacemit-rf/spacemit-wlan.c`是否包含该头文件：
 
 ```bash
 $ grep -n "mod_devicetable.h" drivers/soc/spacemit/spacemit-rf/spacemit-bt.c drivers/soc/spacemit/spacemit-rf/spacemit-wlan.c
@@ -169,7 +169,7 @@ $ find include -name "*.h" -exec grep -n "device_property_read_u32" {} +
 # include/linux/property.h:199:	return device_property_read_u32_array(dev, propname, NULL, 0);
 ```
 
-查看drivers/soc/spacemit/spacemit-rf/spacemit-bt.c和drivers/soc/spacemit/spacemit-rf/spacemit-wlan.c是否包含该头文件：
+查看`drivers/soc/spacemit/spacemit-rf/spacemit-bt.c`和`drivers/soc/spacemit/spacemit-rf/spacemit-wlan.c`是否包含该头文件：
 
 ```bash
 $ grep -n "mod_devicetable.h" drivers/soc/spacemit/spacemit-rf/spacemit-bt.c drivers/soc/spacemit/spacemit-rf/spacemit-wlan.c
@@ -179,7 +179,7 @@ $ grep -n "mod_devicetable.h" drivers/soc/spacemit/spacemit-rf/spacemit-bt.c dri
 
 ### vm结构体变量访问只读成员vm_flags的问题
 
-查看drivers/soc/spacemit/jpu/jpu.c中vm结构体变量类型：
+查看`drivers/soc/spacemit/jpu/jpu.c`中`vm`结构体变量类型：
 
 ```c
 static int jpu_map_to_register(struct file *fp, struct vm_area_struct *vm)
@@ -187,7 +187,7 @@ static int jpu_map_to_register(struct file *fp, struct vm_area_struct *vm)
 ...
 ```
 
-可以看到该结构体类型为struct vm_area_struct
+可以看到该结构体类型为`struct vm_area_struct`
 
 搜索该成员所在的头文件:
 
@@ -196,7 +196,7 @@ $ find include -name "*.h" -exec grep -n "struct vm_area_struct {" {} +
 # include/linux/mm_types.h:565:struct vm_area_struct {
 ```
 
-查看include/linux/mm_types.h中关于vm_flags的定义：
+查看`include/linux/mm_types.h`中关于`vm_flags`的定义：
 
 ```c
 struct vm_area_struct {
@@ -227,15 +227,15 @@ struct vm_area_struct {
 ...
 ```
 
-经过对比后发现，vm_flags在6.1.15中定义如下：
+经过对比后发现，`vm_flags`在`6.1.15`中定义如下：
 
 ```c
 unsigned long vm_flags;         /* Flags, see mm.h. */
 ```
 
-但在6.6中vm_flags是包含在一个union中，并且注释注明需要使用vm_flags_{init|reset|set|clear|mod}这些函数修改vm_flags。
+但在`6.6`中`vm_flags`是包含在一个`union`中，并且注释注明需要使用`vm_flags_{init|reset|set|clear|mod}`这些函数修改`vm_flags`。
 
-查看vm_flags相关的定义:
+查看`vm_flags`相关的定义:
 
 ```bash
 find include -name "*.h" -exec grep -n "vm_flags_init" {} +
@@ -244,7 +244,7 @@ find include -name "*.h" -exec grep -n "vm_flags_init" {} +
 # include/linux/mm.h:861: vm_flags_init(vma, (vma->vm_flags | set) & ~clear);
 ```
 
-发现其定义在mm.h中，打开drivers/soc/spacemit/jpu/jpu.c，增加其头文件并且修改对flags的操作：
+发现其定义在`mm.h`中，打开`drivers/soc/spacemit/jpu/jpu.c`，增加其头文件并且修改对`flags`的操作：
 
 ```bash
 26d25
@@ -276,13 +276,13 @@ $ find include -name "*.h" -exec grep -n "class_create(" {} +
 # include/linux/device/class.h:230:struct class * __must_check class_create(const char *name);
 ```
 
-发现其在class.h中定义且只有一个参数
+发现其在`class.h`中定义且只有一个参数
 
 ```c
 struct class * __must_check class_create(const char *name);
 ```
 
-修改drivers/soc/spacemit/jpu/jpu.c文件：
+修改`drivers/soc/spacemit/jpu/jpu.c`文件：
 
 ```bash
 27d26
