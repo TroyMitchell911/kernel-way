@@ -1,13 +1,13 @@
 ## 移植GPIO驱动
 
-makefile（ref: ../pi-linux/driver/gpio/Makefile）
+`Makefile`（ref: `../pi-linux/driver/gpio/Makefile`）
 
 ```bash
 198d197
 < obj-$(CONFIG_GPIO_K1X)			+= gpio-k1x.o
 ```
 
-Kconfig（ref: ../pi-linux/driver/gpio/Kconfig）
+`Kconfig`（ref: `../pi-linux/driver/gpio/Kconfig`）
 
 ```bash
 diff drivers/gpio/Kconfig kkk
@@ -145,7 +145,7 @@ drivers/gpio/gpio-k1x.c:395:9: error: implicit declaration of function 'gpiochip
 cc1: some warnings being treated as errors
 ```
 
-首先查看struct gpio_chip的定义：
+首先查看`struct gpio_chip`的定义：
 
 ```bash
 $ find include -name "*.h" -exec grep -n "struct gpio_chip {" {} +
