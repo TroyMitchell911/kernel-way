@@ -2,7 +2,7 @@
 
 [^Note]: 欲要移植此驱动请先移植I2C驱动
 
-首先修改Kconfig以便支持k1的选项：
+首先修改`Kconfig`以便支持`k1`的选项：
 
 ```bash
 $ vim drivers/mfd/Kconfig
@@ -20,7 +20,7 @@ $ vim drivers/mfd/Kconfig
 < 
 ```
 
-修改Makefile支持k1所编译的文件:
+修改`Makefile`支持`k1`所编译的文件:
 
 ```bash
 $ vim drivers/mfd/Makefile
@@ -60,7 +60,7 @@ drivers/mfd/spacemit-mfd.c:223:21: note: (near initialization for 'spacemit_pmic
 
 #### struct regmap_irq_chip结构体没有mask_invert成员
 
-参照https://lore.kernel.org/all/20230220143343.694A6C433D2@smtp.kernel.org/的这里可以知道mask_invert这个变量由于没有使用到所以被删除了：
+参照https://lore.kernel.org/all/20230220143343.694A6C433D2@smtp.kernel.org/的这里可以知道`mask_invert`这个变量由于没有使用到所以被删除了：
 
 > ```
 > Aidan MacDonald (2):
@@ -72,7 +72,7 @@ drivers/mfd/spacemit-mfd.c:223:21: note: (near initialization for 'spacemit_pmic
 
 #### 不兼容的指针类型spacemit_pmic_probe
 
-查看drivers/mfd/spacemit-mfd.c发现probe一个结构体成员：
+查看`drivers/mfd/spacemit-mfd.c`发现`probe`一个结构体成员：
 
 ```c
   5 static struct i2c_driver spacemit_pmic_i2c_driver = {
@@ -93,7 +93,7 @@ $ find include -name "*.h" -exec grep -n "struct i2c_driver {" {} +
 include/linux/i2c.h:271:struct i2c_driver {
 ```
 
-发现probe成员的定义如下:
+发现`probe`成员的定义如下:
 
 ```c
  20 struct i2c_driver {
@@ -109,7 +109,7 @@ include/linux/i2c.h:271:struct i2c_driver {
 ...
 ```
 
-查看spacemit_pmic_probe函数定义:
+查看`spacemit_pmic_probe`函数定义:
 
 ```c
  25 static int spacemit_pmic_probe(struct i2c_client *client,
@@ -126,4 +126,4 @@ include/linux/i2c.h:271:struct i2c_driver {
 
 ```
 
-经过查看该函数发现，并没有对参数id的使用，所以可以直接把参数删掉。
+经过查看该函数发现，并没有对参数`id`的使用，所以可以直接把参数删掉。
