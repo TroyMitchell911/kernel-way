@@ -3,7 +3,7 @@
 ```bash
 su && mkdir -p /workspace && mkdir -p linux-riscv && cd /workspace
 ```
-
+ 
 ## 如何编译内核
 
 ### 获取源码
