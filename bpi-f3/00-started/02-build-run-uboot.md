@@ -114,7 +114,7 @@ dd if=FSBL.bin of=/dev/mmcblk2boot0 bs=512 seek=1
 使用[mmcblk2_dump.bin](./resources/mmcblk2_dump.bin)覆盖`mmcblk2`分区数据:
 
 ```bash
-dd if=/dev/mmcblk2_dump.bin of=/dev/mmcblk2 status=progess
+dd if=./mmcblk2_dump.bin of=/dev/mmcblk2 status=progress
 ```
 
 使用以下命令写入`uboot`:
