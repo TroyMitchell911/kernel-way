@@ -15,3 +15,5 @@
 [开始](./bpi-f3/00-started)
 
 [移植到6.6](./bpi-f3/01-basic-transplant)
+
+test
