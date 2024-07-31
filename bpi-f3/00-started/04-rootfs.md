@@ -22,6 +22,8 @@ sync
 ```bash
 xz -d 2024-05-24-Armbian-bpi-SpacemiT_24.5.0-trunk_Bananapif3_mantic_legacy_6.1.15_gnome_desktop.img.xz
 
+sudo losetup /dev/loop14 2024-05-24-Armbian-bpi-SpacemiT_24.5.0-trunk_Bananapif3_mantic_legacy_6.1.15_gnome_desktop.img
+
 lsblk /dev/loop14
 NAME       MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
 loop14       7:14   0  6.2G  0 loop 
@@ -31,6 +33,8 @@ loop14       7:14   0  6.2G  0 loop
 # 那么很明显p2就是rootfs
 
 dd if=/dev/loop14p2 of=./armbian_rootfs.ext4 status=progress
+
+sudo losetup -d /dev/loop14
 ```
 
 将`rootfs`加载到`rootfs`分区:
